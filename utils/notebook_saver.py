@@ -1,5 +1,6 @@
 import matplotlib.pyplot as plt
 import os
+import subprocess
 import contextlib
 from datetime import datetime
 from IPython import get_ipython
@@ -11,16 +12,16 @@ class NotebookSaver:
         os.makedirs(self.save_dir, exist_ok=True)
         print(f"Save directory created: {self.save_dir}")
 
-    def save_notebook_code(self):
+    def save_notebook_code(self, run_start_index):
         filename = os.path.join(self.save_dir, 'notebook_code_snapshot.py')
-        code_cells = get_ipython().user_ns['In']
+        code_cells = get_ipython().user_ns['In'][run_start_index:]  # Get the latest input
 
         with open(filename, 'w', encoding='utf-8') as f:
             for cell in code_cells:
-                if cell is not None:
+                if cell and cell.strip():
                     f.write(cell + '\n\n')
 
-        print(f"Notebook code snapshot saved to: {filename}")
+        print(f"Current notebook cell saved to: {filename}")
 
     def save_model_summary(self, model):
         save_path = os.path.join(self.save_dir, 'model_summary.txt')
